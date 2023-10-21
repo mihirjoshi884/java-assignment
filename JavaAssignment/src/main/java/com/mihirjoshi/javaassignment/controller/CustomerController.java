@@ -1,6 +1,7 @@
 package com.mihirjoshi.javaassignment.controller;
 
 import com.mihirjoshi.javaassignment.DTO.Customer;
+import com.mihirjoshi.javaassignment.DTO.User;
 import com.mihirjoshi.javaassignment.serivces.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,13 +12,22 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/customers-backend")
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-
-
+    private final User adminUser = new User("admin", "admin");
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody User user) {
+        if (adminUser.getUsername().equals(user.getUsername()) && adminUser.getPassword().equals(user.getPassword())) {
+            // Authentication successful
+            return new ResponseEntity<>("Login successful", HttpStatus.OK);
+        } else {
+            // Authentication failed
+            return new ResponseEntity<>("Login failed", HttpStatus.UNAUTHORIZED);
+        }
+    }
     @PostMapping("/create")
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         try {
@@ -32,7 +42,7 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/list")
+    @GetMapping("/get-customer-list")
     public ResponseEntity<List<Customer>> getAllCustomers() {
         try {
             List<Customer> customerList = customerService.getAllCustomers();
